@@ -128,25 +128,29 @@ struct ContentView: View {
         VStack {
             ZStack {
                 Color.white
-                    GeometryReader { geometry in
-                        NormalizedCanvasView(paths: paths)
-                            .frame(width: 600, height: 600,  alignment: .center)
-                            .padding(100)
-                    }
+                NormalizedCanvasView(paths: paths)
+                    .aspectRatio(1.0, contentMode: .fill)
+                    //.frame(width: 600, height: 600,  alignment: .center)
+                    .padding(100)
             }
+            
             VStack(alignment: .leading) {
-                VStack {
+                VStack(spacing: 10) {
                     HStack {
                         Text("Rectangle coordinates:")
                         TextField("Rectangle", text: $rectangleString)
                     }
                     HStack {
-                        Text("Transformation:").font(.title2)
+                        Text("Transformation:")
                         TextField("Transform", text: $transformationString)
                     }
+                    HStack {
+                        Text(statusMessage).frame(alignment: .leading)
+                        Spacer()
+                    }
                 }.font(.title2)
-                Text(statusMessage).font(.title).frame(alignment: .leading)
             }.padding(40)
+                .keyboardAdaptive()
         }
         .onChange(of: rectangleString) { _ in
             updateRectangle()
@@ -170,6 +174,11 @@ struct ContentView: View {
     }
     
     func updateTransform() {
+        guard !transformationString.isEmpty else {
+            transform = .identity
+            return
+        }
+
         do {
             let parser =  TransformationString(transformationString)
             let t = try parser.parse()
@@ -178,6 +187,7 @@ struct ContentView: View {
             updateRectangle()
             statusMessage = String(describing: t)
         } catch {
+            transform = .identity
             statusMessage = "invalid transformation string"
         }
 
