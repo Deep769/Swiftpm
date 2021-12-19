@@ -128,10 +128,12 @@ struct ContentView: View {
         VStack {
             ZStack {
                 Color.white
-                NormalizedCanvasView(paths: paths)
-                    .aspectRatio(1.0, contentMode: .fill)
-                    //.frame(width: 600, height: 600,  alignment: .center)
-                    .padding(100)
+                GeometryReader { geometry in
+                    NormalizedCanvasView(paths: paths)
+                        .frame(minWidth: 300, idealWidth: geometry.size.width - 40, maxWidth: .greatestFiniteMagnitude, minHeight: 300, idealHeight:  min(geometry.size.height - 300, 600), maxHeight: .greatestFiniteMagnitude, alignment: .center)
+                        .aspectRatio(1.0, contentMode: .fit)
+                    .padding(40)
+                }
             }
             
             VStack(alignment: .leading) {
@@ -148,9 +150,11 @@ struct ContentView: View {
                         Text(statusMessage).frame(alignment: .leading)
                         Spacer()
                     }
-                }.font(.title2)
-            }.padding(40)
-                .keyboardAdaptive()
+                }
+                .font(.title2)
+                .keyboardType(.asciiCapableNumberPad)
+                .padding(40)
+            }
         }
         .onChange(of: rectangleString) { _ in
             updateRectangle()
