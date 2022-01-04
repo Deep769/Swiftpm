@@ -131,8 +131,8 @@ struct ContentView: View {
                 Color.white
                 GeometryReader { geometry in
                     NormalizedCanvasView(paths: paths)
-                        .frame(minWidth: 300, idealWidth: 600, maxWidth: 600, minHeight: 300, idealHeight: 600, maxHeight: 600, alignment: .center)
-                        .aspectRatio(1.0, contentMode: .fill)
+                        .frame(minWidth: 300, idealWidth: geometry.size.width - 40, maxWidth: .greatestFiniteMagnitude, minHeight: 300, idealHeight:  min(geometry.size.height - 300, 600), maxHeight: .greatestFiniteMagnitude, alignment: .center)
+                        .aspectRatio(1.0, contentMode: .fit)
                     .padding(40)
                 }
             }
