@@ -121,6 +121,7 @@ struct ContentView: View {
     @State private var transformationString = "R(0)*T(0,0)*S(1,1)"
     @State private var rectangleString = "-0.25 -0.25 0.25 0.25"
     @State private var statusMessage = ""
+    @State private var applyTransform = true
     @State private var transform = CGAffineTransform(scaleX: 1.0, y: 1.0).concatenating(.init(rotationAngle: 0.0)).concatenating(.init(translationX: 0.0, y: 0.0))
     @State private var paths = [PathInfo.rectangle(p1: CGPoint(x: 0.25, y: -0.25), p2: CGPoint(x: 0.75, y: 0.25), transform: .identity)]
     
@@ -143,6 +144,8 @@ struct ContentView: View {
                         TextField("Rectangle", text: $rectangleString)
                     }
                     HStack {
+                        Toggle("Apply", isOn: $applyTransform)
+                            .frame(maxWidth: 120)
                         Text("Transformation:")
                         TextField("Transform", text: $transformationString)
                     }
@@ -155,6 +158,9 @@ struct ContentView: View {
                 .keyboardType(.asciiCapableNumberPad)
                 .padding(40)
             }
+        }
+        .onChange(of: applyTransform) { _ in
+            updateTransform()
         }
         .onChange(of: rectangleString) { _ in
             updateRectangle()
@@ -184,12 +190,15 @@ struct ContentView: View {
         }
 
         do {
-            let parser =  TransformationString(transformationString)
-            let t = try parser.parse()
-            print(t)
-            transform = t
+            if applyTransform {
+                let parser =  TransformationString(transformationString)
+                let t = try parser.parse()
+                transform = t
+            } else {
+                transform = .identity
+            }
             updateRectangle()
-            statusMessage = String(describing: t)
+            statusMessage = String(describing: transform)
         } catch {
             transform = .identity
             statusMessage = "invalid transformation string"
